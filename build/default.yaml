@@ -1,0 +1,8 @@
+pointcloud_divider:
+  use_large_grid: false
+  merge_pcds: false
+  leaf_size: 0.1
+  grid_size_x: 497
+  grid_size_y: 419
+  global_x_low: -51.55947494506836
+  global_y_low: -379.3497619628906

@@ -1,0 +1,3 @@
+source;share/pointcloud_divider/environment/ament_prefix_path.sh
+source;share/pointcloud_divider/environment/library_path.sh
+source;share/pointcloud_divider/environment/path.sh
