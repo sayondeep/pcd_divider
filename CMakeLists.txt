@@ -22,13 +22,15 @@ include_directories(
   ${PCL_INCLUDE_DIRS}
 )
 
-add_library(${PROJECT_NAME} SHARED pointcloud_divider_core.cpp)
+add_library(${PROJECT_NAME} SHARED pointcloud_divider_core.cpp pointcloud_divider_node.cpp)
 target_link_libraries(${PROJECT_NAME} PUBLIC ${YAML_CPP_LIBRARIES} ${PCL_LIBRARIES} -lstdc++fs)
 
 add_executable(${PROJECT_NAME}_node
   pointcloud_divider_core.cpp
   pointcloud_divider_node.cpp
+  qdtree.cpp
 )
+
 target_link_libraries(${PROJECT_NAME}_node PUBLIC ${YAML_CPP_LIBRARIES} ${PCL_LIBRARIES} -lstdc++fs)
 
 ament_export_include_directories(include)

@@ -255,6 +255,7 @@ pointcloud_divider_node.o: pointcloud_divider_node.cpp.o
 
 # target to build an object file
 pointcloud_divider_node.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pointcloud_divider.dir/build.make CMakeFiles/pointcloud_divider.dir/pointcloud_divider_node.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/pointcloud_divider_node.dir/build.make CMakeFiles/pointcloud_divider_node.dir/pointcloud_divider_node.cpp.o
 .PHONY : pointcloud_divider_node.cpp.o
 
@@ -263,6 +264,7 @@ pointcloud_divider_node.i: pointcloud_divider_node.cpp.i
 
 # target to preprocess a source file
 pointcloud_divider_node.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pointcloud_divider.dir/build.make CMakeFiles/pointcloud_divider.dir/pointcloud_divider_node.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/pointcloud_divider_node.dir/build.make CMakeFiles/pointcloud_divider_node.dir/pointcloud_divider_node.cpp.i
 .PHONY : pointcloud_divider_node.cpp.i
 
@@ -271,8 +273,33 @@ pointcloud_divider_node.s: pointcloud_divider_node.cpp.s
 
 # target to generate assembly for a file
 pointcloud_divider_node.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pointcloud_divider.dir/build.make CMakeFiles/pointcloud_divider.dir/pointcloud_divider_node.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/pointcloud_divider_node.dir/build.make CMakeFiles/pointcloud_divider_node.dir/pointcloud_divider_node.cpp.s
 .PHONY : pointcloud_divider_node.cpp.s
+
+qdtree.o: qdtree.cpp.o
+.PHONY : qdtree.o
+
+# target to build an object file
+qdtree.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pointcloud_divider_node.dir/build.make CMakeFiles/pointcloud_divider_node.dir/qdtree.cpp.o
+.PHONY : qdtree.cpp.o
+
+qdtree.i: qdtree.cpp.i
+.PHONY : qdtree.i
+
+# target to preprocess a source file
+qdtree.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pointcloud_divider_node.dir/build.make CMakeFiles/pointcloud_divider_node.dir/qdtree.cpp.i
+.PHONY : qdtree.cpp.i
+
+qdtree.s: qdtree.cpp.s
+.PHONY : qdtree.s
+
+# target to generate assembly for a file
+qdtree.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pointcloud_divider_node.dir/build.make CMakeFiles/pointcloud_divider_node.dir/qdtree.cpp.s
+.PHONY : qdtree.cpp.s
 
 # Help Target
 help:
@@ -297,6 +324,9 @@ help:
 	@echo "... pointcloud_divider_node.o"
 	@echo "... pointcloud_divider_node.i"
 	@echo "... pointcloud_divider_node.s"
+	@echo "... qdtree.o"
+	@echo "... qdtree.i"
+	@echo "... qdtree.s"
 .PHONY : help
 
 

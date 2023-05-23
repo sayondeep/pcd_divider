@@ -1,6 +1,8 @@
 file(REMOVE_RECURSE
   "CMakeFiles/pointcloud_divider.dir/pointcloud_divider_core.cpp.o"
   "CMakeFiles/pointcloud_divider.dir/pointcloud_divider_core.cpp.o.d"
+  "CMakeFiles/pointcloud_divider.dir/pointcloud_divider_node.cpp.o"
+  "CMakeFiles/pointcloud_divider.dir/pointcloud_divider_node.cpp.o.d"
   "libpointcloud_divider.pdb"
   "libpointcloud_divider.so"
 )

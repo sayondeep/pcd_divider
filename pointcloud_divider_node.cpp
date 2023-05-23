@@ -1,13 +1,15 @@
+#include "pointcloud_divider_node.hpp"
 #include "pointcloud_divider.hpp"
+
 #include <iostream>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 
-void printInvalidArguments()
-{
-  std::cerr << "Error: Invalid Arugments" << std::endl;
-  exit(1);
-}
+// void printInvalidArguments()
+// {
+//   std::cerr << "Error: Invalid Arugments" << std::endl;
+//   exit(1);
+// }
 
 std::vector<double> calculateGridSize(const std::string& pcdFilePath)
 {
@@ -49,44 +51,46 @@ std::vector<double> calculateGridSize(const std::string& pcdFilePath)
     return res;
 }
 
-int main(int argc, char* argv[])
+//int main(int argc, char* argv[])
+std::vector<std::string> split4(std::string& pcd_file,std::string& output_dir,std::string &prefix)
 {
-  int n_pcd;
+  // int n_pcd;
   std::vector<std::string> pcd_name;
-  std::string output_dir, prefix, config;
+  //std::string output_dir, prefix, config;
 
-  if (argc <= 0)
-  {
-    printInvalidArguments();
-  }
+  // if (argc <= 0)
+  // {
+  //   printInvalidArguments();
+  // }
 
-  if (argc == 4)
-  {
-    pcd_name.push_back(argv[1]);
+  // if (argc == 4)
+  // {
+  //   pcd_name.push_back(argv[1]);
 
-    output_dir = argv[2];
-    prefix = argv[3];
-  }
-  else
-  {
-    printInvalidArguments();
-  }
+  //   output_dir = argv[2];
+  //   prefix = argv[3];
+  // }
+  // else
+  // {
+  //   printInvalidArguments();
+  // }
 
   // Currently only PointXYZI is supported
   PointCloudDivider<pcl::PointXYZI> divider;
-  std::string pcdFilePath = pcd_name[0];
+  pcd_name.push_back(pcd_file);
+  std::string pcdFilePath = pcd_name[0]; //because only one file is being sent as of now
+
   std::vector<double> conf = calculateGridSize(pcdFilePath);
   double grid_size_x = ceil(conf[0]/2.0);
   double grid_size_y = ceil(conf[1]/2.0);
   double global_x_low = conf[2];
   double global_y_low = conf[3];
+
   std::vector<std::string> quads = 
   divider.run(pcd_name, output_dir, prefix,grid_size_x,grid_size_y,global_x_low, global_y_low);
 
-  for(std::string str:quads)
-  {
-    std::cout<<str<<std::endl;
-  }
 
-  return 0;
+
+  //return 0;
+  return quads;
 }
