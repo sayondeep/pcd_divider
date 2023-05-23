@@ -77,7 +77,7 @@ public:
   // void run(const typename pcl::PointCloud<PointT>::Ptr& cloud, std::string output_dir,
   //          std::string file_prefix, std::string config);
 
-  void run(std::vector<std::string> pcd_names, std::string output_dir,
+  std::vector<std::string> run(std::vector<std::string> pcd_names, std::string output_dir,
                                                             std::string file_prefix,double grid_size_x,
                                                             double grid_size_y,double global_x_low,
                                                             double global_y_low);
@@ -122,7 +122,7 @@ private:
   void paramInitialize(double grid_size_x,double grid_size_y,
                                                 double global_x_low,
                                                 double global_y_low);
-  void saveGridInfoToYAML(const std::string& yaml_file_path);
+  void saveGridInfoToYAML(const std::string& yaml_file_path,std::vector<std::string>& quads);
 };
 
 #endif

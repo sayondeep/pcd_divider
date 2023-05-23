@@ -10,7 +10,7 @@ namespace fs = std::filesystem;
 template <class PointT>
 // void PointCloudDivider<PointT>::run(std::vector<std::string> pcd_names, std::string output_dir,
 //                                                             std::string file_prefix, std::string config)
-void PointCloudDivider<PointT>::run(std::vector<std::string> pcd_names, std::string output_dir,
+std::vector<std::string> PointCloudDivider<PointT>::run(std::vector<std::string> pcd_names, std::string output_dir,
                                                             std::string file_prefix,double grid_size_x,
                                                             double grid_size_y,double global_x_low,
                                                             double global_y_low)
@@ -30,9 +30,10 @@ void PointCloudDivider<PointT>::run(std::vector<std::string> pcd_names, std::str
     dividePointCloud(cloud_ptr);
     saveGridPCD();
   }
-  saveMergedPCD();
   std::string yaml_file_path = output_dir_ + "/" + file_prefix_ + "_metadata.yaml";
-  saveGridInfoToYAML(yaml_file_path);
+  std::vector<std::string> quads(4);
+  saveGridInfoToYAML(yaml_file_path,quads);
+  return quads;
 }
 
 template <class PointT>
@@ -58,21 +59,12 @@ void PointCloudDivider<PointT>::savePCD(const std::string& path, const pcl::Poin
   }
 }
 
-template <class PointT>
-void PointCloudDivider<PointT>::saveMergedPCD()
-{
-  if (merge_pcds_)
-  {
-    std::string filename = output_dir_ + "/" + file_prefix_ + ".pcd";
-    savePCD(filename, *merged_ptr_);
-  }
-}
 
 template <class PointT>
 GridInfo PointCloudDivider<PointT>::pointToGrid(const Eigen::Vector3f& pos) const
 {
-  int x_id = static_cast<double>(global_x_low_+(std::floor((pos.x()-global_x_low_) / grid_size_x_) * grid_size_x_));
-  int y_id = static_cast<double>(global_y_low_+(std::floor((pos.y()-global_y_low_) / grid_size_y_) * grid_size_y_));
+  int x_id = static_cast<int>(global_x_low_+(std::floor((pos.x()-global_x_low_) / grid_size_x_) * grid_size_x_));
+  int y_id = static_cast<int>(global_y_low_+(std::floor((pos.y()-global_y_low_) / grid_size_y_) * grid_size_y_));
   int gx_id = static_cast<int>(std::floor(pos.x() / g_grid_size_x_) * g_grid_size_x_);
   int gy_id = static_cast<int>(std::floor(pos.y() / g_grid_size_y_) * g_grid_size_y_);
   return GridInfo(x_id, y_id, gx_id, gy_id);
@@ -166,11 +158,6 @@ void PointCloudDivider<PointT>::saveGridPCD()
       exit(1);
     }
   }
-
-  if (merge_pcds_)
-  {
-  }
-
   grid_to_cloud.clear();
 }
 
@@ -179,23 +166,6 @@ void PointCloudDivider<PointT>::paramInitialize(double grid_size_x,double grid_s
                                                 double global_x_low,
                                                 double global_y_low)
 {
-  // try
-  // {
-  //   YAML::Node conf = YAML::LoadFile(config_file_)["pointcloud_divider"];
-  //   // use_large_grid_ = conf["use_large_grid"].as<bool>();
-  //   // merge_pcds_ = conf["merge_pcds"].as<bool>();
-  //   // leaf_size_ = conf["leaf_size"].as<double>();
-  //   // grid_size_x_ = conf["grid_size_x"].as<double>();
-  //   // grid_size_y_ = conf["grid_size_y"].as<double>();
-  //   // global_x_low_ = conf["global_x_low"].as<double>(); // added for x_low
-  //   // global_y_low_ = conf["global_y_low"].as<double>(); // added for y_low
-
-  // }
-  // catch (YAML::Exception& e)
-  // {
-  //   std::cerr << "YAML Error: " << e.what() << std::endl;
-  //   exit(1);
-  // }
 
   
   grid_size_x_ = grid_size_x;
@@ -211,7 +181,7 @@ void PointCloudDivider<PointT>::paramInitialize(double grid_size_x,double grid_s
 }
 
 template <class PointT>
-void PointCloudDivider<PointT>::saveGridInfoToYAML(const std::string& yaml_file_path)
+void PointCloudDivider<PointT>::saveGridInfoToYAML(const std::string& yaml_file_path,std::vector<std::string>& quads)
 {
   std::ofstream yaml_file(yaml_file_path);
 
@@ -229,6 +199,16 @@ void PointCloudDivider<PointT>::saveGridInfoToYAML(const std::string& yaml_file_
     std::string file_name = makeFileName(grid);
     fs::path p(file_name);
     yaml_file << p.filename().string() << ": [" << grid.x << ", " << grid.y << "]" << std::endl;
+
+    if(grid.x == static_cast<int>(global_x_low_) && grid.y == static_cast<int>(global_y_low_))//s_w
+      quads[2] = file_name;
+    if(grid.x == static_cast<int>(global_x_low_+grid_size_x_) && grid.y == static_cast<int>(global_y_low_))
+      quads[3] = file_name;
+    if(grid.x == static_cast<int>(global_x_low_) && grid.y == static_cast<int>(global_y_low_+grid_size_y_))
+      quads[0] = file_name;
+    if(grid.x == static_cast<int>(global_x_low_+grid_size_x_) && grid.y == static_cast<int>(global_y_low_+grid_size_y_))
+      quads[1] = file_name;
+
   }
 
   yaml_file.close();

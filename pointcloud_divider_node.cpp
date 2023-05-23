@@ -76,12 +76,17 @@ int main(int argc, char* argv[])
   PointCloudDivider<pcl::PointXYZI> divider;
   std::string pcdFilePath = pcd_name[0];
   std::vector<double> conf = calculateGridSize(pcdFilePath);
-  double grid_size_x = conf[0];
-  double grid_size_y = conf[1];
+  double grid_size_x = ceil(conf[0]/2.0);
+  double grid_size_y = ceil(conf[1]/2.0);
   double global_x_low = conf[2];
   double global_y_low = conf[3];
-
+  std::vector<std::string> quads = 
   divider.run(pcd_name, output_dir, prefix,grid_size_x,grid_size_y,global_x_low, global_y_low);
+
+  for(std::string str:quads)
+  {
+    std::cout<<str<<std::endl;
+  }
 
   return 0;
 }
