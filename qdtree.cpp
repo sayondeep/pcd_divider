@@ -1,13 +1,14 @@
 #include<iostream>
 #include<string>
+#include <fstream>
 #include"pointcloud_divider_node.hpp"
 
 // Type alias for 2D matrix
 using Matrix = std::vector<std::vector<int>>;
 
 
-std::string pcd_name = "/home/sayon/autoware_map/town01/pointcloud_map.pcd";
-std::string output_dir = "/home/sayon/autoware_map/town01/splitted/";
+std::string pcd_name = "/home/sayon/autoware_map/town05/pointcloud_map.pcd";
+std::string output_dir = "/home/sayon/autoware_map/town05/splitted/";
 //std::string prefix = "t1";
 
 template <class T>
@@ -68,8 +69,6 @@ void splitMatrix(const Matrix& inputMatrix, Matrix& quadrant1, Matrix& quadrant2
 class QuadTree 
 {
 private:
-    // static std::unordered_map<int, std::unordered_map<int, QuadTree>> tiles;
-    // static std::unordered_map<int, int> count;
 
     int level;
     bool is_last;
@@ -87,15 +86,10 @@ public:
 
     void insert(std::string& pcd_name, std::vector<std::vector<int>> &matrix, int level = 0) 
     {
-        //QuadTree quadTree;
         this->level = level;
-        //quadTree.mean = calculate_mean(img).astype(int);
-        //quadTree.resolution = {img.shape[0], img.shape[1]};
-        //quadTree.img = img;
+
         this->parent_pcd = pcd_name;
-        std::cout<<this->parent_pcd<<std::endl;
-        // QuadTree::tiles[level][QuadTree::count[level]] = quadTree;
-        // QuadTree::count[level] += 1;
+
         this->is_last = true;
 
         if (!checkEqual(matrix)) 
@@ -110,17 +104,18 @@ public:
             splitMatrix(matrix, n_w, n_e, s_w, s_e);
             
 
-            QuadTree* north_west = new QuadTree();
-            north_west->insert(split_img[0], n_w, level + 1);
+            //QuadTree* north_west = new QuadTree();
+            this->north_west = new QuadTree();
+            this->north_west->insert(split_img[0], n_w, level + 1);
 
-            QuadTree* north_east = new QuadTree();
-            north_east->insert(split_img[1], n_e, level + 1);
+            this-> north_east = new QuadTree();
+            this->north_east->insert(split_img[1], n_e, level + 1);
 
-            QuadTree* south_west = new QuadTree();
-            south_west->insert(split_img[2], s_w, level + 1);
+            this-> south_west = new QuadTree();
+            this->south_west->insert(split_img[2], s_w, level + 1);
 
-            QuadTree* south_east = new QuadTree();
-            south_east->insert(split_img[3], s_e, level + 1);
+            this-> south_east = new QuadTree();
+            this->south_east->insert(split_img[3], s_e, level + 1);
         }
 
         return ;
@@ -128,15 +123,12 @@ public:
 
     void get_tiles(int level,std::vector<std::string> &tiles)
     {  
-        std::cout<<"inside_get_tiles"<<std::endl;
-        std::cout<<this->parent_pcd<<std::endl;
         
         if (this->is_last || this->level == level) 
         {
-            //return np.tile(mean, (resolution[0], resolution[1], 1));
             // Display or process the image
             tiles.push_back(this->parent_pcd);
-            std::cout<<this->parent_pcd<<std::endl;
+            //std::cout<<this->parent_pcd<<std::endl;
         }
 
         if(this->north_west)
@@ -148,8 +140,6 @@ public:
         if(this->south_east)
             this->south_east->get_tiles(level,tiles);
 
-        // concatenate4(nw_image, ne_image, sw_image, se_image);
-
         return ;
     }
 };
@@ -157,9 +147,6 @@ public:
 
 int main() 
 {
-    // Example usage
-    //Image img;      // Provide the image
-
     // std::string pcd_name = "/home/sayon/autoware_map/town01/pointcloud_map.pcd";
     // std::string output_dir = "/home/sayon/autoware_map/town01/splitted/";
     // std::string prefix = "t1";
@@ -172,12 +159,30 @@ int main()
     QuadTree* qt = new QuadTree();
     qt->insert(pcd_name,matrix);
     std::vector<std::string> tiles;
-    std::cout<<"calling_get_tiles"<<std::endl;
+
     qt->get_tiles(5,tiles);
     std::cout<<tiles.size()<<std::endl;
-    for(std::string str:tiles)
+    // for(std::string str:tiles)
+    // {
+    //     std::cout<<str<<std::endl;
+    // }
+    std::ofstream outputFile("pcd_tiles.txt");  // Open the file for writing
+
+    if (outputFile.is_open()) 
     {
-        std::cout<<str<<std::endl;
+        // Iterate over the vector and write each string to the file
+        for (const std::string& str : tiles) 
+        {
+            std::cout<<str<<std::endl;
+            outputFile << str << std::endl;
+        }
+
+        outputFile.close();  // Close the file
+        std::cout << "Tiles saved to file." << std::endl;
+    } 
+    else 
+    {
+        std::cout << "Error opening the file." << std::endl;
     }
 
     return 0;
