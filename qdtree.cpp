@@ -27,7 +27,31 @@ bool checkEqual(const std::vector<std::vector<T>>& myList)
   return true;
 }
 
+std::vector<std::vector<int>> readMatrixFromFile(const std::string& filename) {
+    std::ifstream inputFile(filename);
+    std::vector<std::vector<int>> matrix;
 
+    if (inputFile) {
+        int rows, cols;
+        inputFile >> rows >> cols;  // Read the dimensions of the matrix
+
+        // Resize the matrix
+        matrix.resize(rows, std::vector<int>(cols));
+
+        // Read the matrix elements
+        for (int i = 0; i < rows; ++i) {
+            for (int j = 0; j < cols; ++j) {
+                inputFile >> matrix[i][j];
+            }
+        }
+
+        inputFile.close();
+    } else {
+        std::cout << "Failed to open the file: " << filename << std::endl;
+    }
+
+    return matrix;
+}
 
 // Function to split a matrix into four quadrants
 void splitMatrix(const Matrix& inputMatrix, Matrix& quadrant1, Matrix& quadrant2, Matrix& quadrant3, Matrix& quadrant4) 
@@ -151,10 +175,20 @@ int main()
     // std::string output_dir = "/home/sayon/autoware_map/town01/splitted/";
     // std::string prefix = "t1";
     
-    std::vector<std::vector<int>> matrix ={{1,0,0,1},
-                                            {0,0,0,0},
-                                            {0,0,0,0},
-                                            {0,0,0,0}};  // Provide the matrix
+    std::vector<std::vector<int>> matrix = readMatrixFromFile("../matrix.txt");
+    // Display the matrix
+    for (const auto& row : matrix) 
+    {
+        for (const auto& element : row) 
+        {
+            std::cout << element << " ";
+        }
+        std::cout << std::endl;
+    }
+    // {{1,0,0,1},
+    //                                         {0,0,0,0},
+    //                                         {0,0,0,0},
+    //                                         {0,0,0,0}};  // Provide the matrix
 
     QuadTree* qt = new QuadTree();
     qt->insert(pcd_name,matrix);
@@ -166,7 +200,7 @@ int main()
     // {
     //     std::cout<<str<<std::endl;
     // }
-    std::ofstream outputFile("pcd_tiles.txt");  // Open the file for writing
+    std::ofstream outputFile("../pcd_tiles.txt");  // Open the file for writing
 
     if (outputFile.is_open()) 
     {

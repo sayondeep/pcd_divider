@@ -1,0 +1,10 @@
+/home/sayon/autoware_map/town05/splitted/1_-320_125.pcd
+/home/sayon/autoware_map/town05/splitted/1_-175_125.pcd
+/home/sayon/autoware_map/town05/splitted/1_-320_-2.pcd
+/home/sayon/autoware_map/town05/splitted/1_-175_-2.pcd
+/home/sayon/autoware_map/town05/splitted/1_-30_126.pcd
+/home/sayon/autoware_map/town05/splitted/1_112_126.pcd
+/home/sayon/autoware_map/town05/splitted/1_-30_-2.pcd
+/home/sayon/autoware_map/town05/splitted/1_112_-2.pcd
+/home/sayon/autoware_map/town05/splitted/0_-320_-259.pcd
+/home/sayon/autoware_map/town05/splitted/0_-30_-259.pcd
