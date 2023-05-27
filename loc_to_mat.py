@@ -90,14 +90,17 @@ def save_binary_matrix(csv_filename, matrix_size, output_filename):
                 # Set the corresponding matrix cell to 1
                 scaled_matrix[y_scaled, x_scaled] = 1
 
-        # Save the scaled binary matrix to a text file
+
+
+                # Save the scaled binary matrix to a text file
         with open(output_filename, "w") as output_file:
             # Write the dimensions of the matrix as the first row
             output_file.write(f"{matrix_size} {matrix_size}\n")
 
-            # Write the binary matrix
-            csv_writer = csv.writer(output_file)
-            csv_writer.writerows(scaled_matrix)
+            # Write the binary matrix as space-separated values
+            for row in scaled_matrix:
+                row_str = " ".join(map(str, row))
+                output_file.write(row_str + "\n")
 
         print("Matrix saved to", output_filename)
 
