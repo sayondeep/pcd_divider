@@ -1,31 +1,37 @@
 #include<iostream>
 #include<string>
 #include <fstream>
+#include <climits>
 #include"pointcloud_divider_node.hpp"
 
 // Type alias for 2D matrix
 using Matrix = std::vector<std::vector<int>>;
 
 
-std::string pcd_name = "/home/sayon/autoware_map/town05/pointcloud_map.pcd";
-std::string output_dir = "/home/sayon/autoware_map/town05/splitted/";
+std::string pcd_name = "/home/sayon/autoware_map/town01/pointcloud_map.pcd";
+std::string output_dir = "/home/sayon/autoware_map/town01/splitted/";
 //std::string prefix = "t1";
 
 template <class T>
-bool checkEqual(const std::vector<std::vector<T>>& myList)
+bool checkEqual(const std::vector<std::vector<T>>& matrix)
 {
-  if (myList.empty())
+    if (matrix.empty()) {
+        return true;
+    }
+
+    int firstElement = matrix[0][0];
+
+    for (const auto& row : matrix) {
+        for (int element : row) {
+            if (element != firstElement) {
+                return false;
+            }
+        }
+    }
+
     return true;
-
-  const std::vector<T>& first = myList[0];
-  for (const std::vector<T>& x : myList)
-  {
-    if (x != first)
-      return false;
-  }
-
-  return true;
 }
+
 
 std::vector<std::vector<int>> readMatrixFromFile(const std::string& filename) {
     std::ifstream inputFile(filename);
@@ -97,13 +103,14 @@ private:
     int level;
     bool is_last;
     std::string parent_pcd;
+    std::pair<double,double> low , high;
     QuadTree* north_west;
     QuadTree* north_east;
     QuadTree* south_west;
     QuadTree* south_east;
 
 public:
-    QuadTree() : level(0), is_last(true), parent_pcd(""), north_west(nullptr), north_east(nullptr), south_west(nullptr), south_east(nullptr) 
+    QuadTree() : level(0), low(INT_MIN,INT_MIN),high(INT_MAX,INT_MAX),is_last(true), parent_pcd(""), north_west(nullptr), north_east(nullptr), south_west(nullptr), south_east(nullptr) 
     {
         // Initialize other member variables
     }
@@ -114,13 +121,21 @@ public:
 
         this->parent_pcd = pcd_name;
 
+        std::vector<double> bound = calculateGridSize(this->parent_pcd);
+
+        this->low.first = bound[2];
+        this->low.second = bound[3];
+
+        this->high.first = bound[4];
+        this->high.second = bound[5];
+
         this->is_last = true;
 
         if (!checkEqual(matrix)) 
         {
             std::string prefix = std::to_string(level);
             
-            std::vector<std::string> split_img = split4(pcd_name,output_dir,prefix);
+            std::vector<std::string> split_img = split4(pcd_name,output_dir,prefix,bound);
 
             this->is_last = false;
 
@@ -141,6 +156,17 @@ public:
             this-> south_east = new QuadTree();
             this->south_east->insert(split_img[3], s_e, level + 1);
         }
+        // else
+        // {
+        //     for (const auto& row : matrix) 
+        //     {
+        //         for (const auto& element : row) 
+        //         {
+        //             std::cout << element << " ";
+        //         }
+        //         std::cout << std::endl;
+        //     }
+        // }
 
         return ;
     }
@@ -157,7 +183,7 @@ public:
 
         if(this->north_west)
             this->north_west->get_tiles(level,tiles);
-        if(this->north_west)
+        if(this->north_east)
             this->north_east->get_tiles(level,tiles);
         if(this->south_west)
             this->south_west->get_tiles(level,tiles);
@@ -166,7 +192,46 @@ public:
 
         return ;
     }
+
+    std::string get_tile_by_loc(QuadTree* qt, double x, double y)
+    {
+        if (qt->is_last) 
+        {
+            return qt->parent_pcd;
+
+        }
+        
+        if (x < (qt->low.first + qt->high.first) / 2) 
+        {
+            if (y < (qt->low.second + qt->high.second) / 2) 
+            {
+                return get_tile_by_loc(qt->south_west, x,  y);
+            } 
+            else 
+            {
+                return get_tile_by_loc(qt->north_west, x,  y);
+            }
+        } 
+        else 
+        {
+            if (y < (qt->low.second + qt->high.second) / 2) 
+            {
+                return get_tile_by_loc(qt->south_east, x,  y);
+            } 
+            else 
+            {
+                return get_tile_by_loc(qt->north_east, x,  y);
+            }
+        }
+
+    }
 };
+
+
+void give_tile(QuadTree* qt,double x,double y)
+{
+    std::cout<<"The corres. tile name is "<<qt->get_tile_by_loc(qt,x,y)<<std::endl;
+}
 
 
 int main() 
@@ -177,14 +242,14 @@ int main()
     
     std::vector<std::vector<int>> matrix = readMatrixFromFile("../matrix.txt");
     // Display the matrix
-    for (const auto& row : matrix) 
-    {
-        for (const auto& element : row) 
-        {
-            std::cout << element << " ";
-        }
-        std::cout << std::endl;
-    }
+    // for (const auto& row : matrix) 
+    // {
+    //     for (const auto& element : row) 
+    //     {
+    //         std::cout << element << " ";
+    //     }
+    //     std::cout << std::endl;
+    // }
     // {{1,0,0,1},
     //                                         {0,0,0,0},
     //                                         {0,0,0,0},
@@ -192,9 +257,10 @@ int main()
 
     QuadTree* qt = new QuadTree();
     qt->insert(pcd_name,matrix);
+    
     std::vector<std::string> tiles;
 
-    qt->get_tiles(5,tiles);
+    qt->get_tiles(7,tiles);
     std::cout<<tiles.size()<<std::endl;
     // for(std::string str:tiles)
     // {
@@ -217,6 +283,28 @@ int main()
     else 
     {
         std::cout << "Error opening the file." << std::endl;
+    }
+
+
+    while(true)
+    {
+        int ch;
+        std::cout<<"Enter 1 to give location or 0 to exit"<<std::endl;
+        std::cin>>ch;
+
+        if(ch==0)
+            break;
+        else
+        {
+            double x,y;
+            std::cout<<"Enter X:"<<std::endl;
+            std::cin>>x;
+            std::cout<<"Enter Y:"<<std::endl;
+            std::cin>>y;
+
+            give_tile(qt,x,y);
+        }
+             
     }
 
     return 0;

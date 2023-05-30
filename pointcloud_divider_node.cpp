@@ -43,16 +43,18 @@ std::vector<double> calculateGridSize(const std::string& pcdFilePath)
     double grid_size_x = max_x - min_x;
     double grid_size_y = max_y - min_y;
 
-    std::vector<double> res(4);
+    std::vector<double> res(6);
     res[0]= grid_size_x ;
     res[1]= grid_size_y;
     res[2]= min_x;
     res[3]= min_y;
+    res[4]= max_x;
+    res[5]= max_y;
     return res;
 }
 
 //int main(int argc, char* argv[])
-std::vector<std::string> split4(std::string& pcd_file,std::string& output_dir,std::string &prefix)
+std::vector<std::string> split4(std::string& pcd_file,std::string& output_dir,std::string &prefix,std::vector<double>&bound)
 {
   // int n_pcd;
   std::vector<std::string> pcd_name;
@@ -80,7 +82,8 @@ std::vector<std::string> split4(std::string& pcd_file,std::string& output_dir,st
   pcd_name.push_back(pcd_file);
   std::string pcdFilePath = pcd_name[0]; //because only one file is being sent as of now
 
-  std::vector<double> conf = calculateGridSize(pcdFilePath);
+//   std::vector<double> conf = calculateGridSize(pcdFilePath);
+  std::vector<double> conf = bound;
   double grid_size_x = ceil(conf[0]/2.0);
   double grid_size_y = ceil(conf[1]/2.0);
   double global_x_low = conf[2];
