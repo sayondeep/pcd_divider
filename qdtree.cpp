@@ -1,8 +1,7 @@
-#include<iostream>
-#include<string>
 #include <fstream>
 #include <climits>
 #include"pointcloud_divider_node.hpp"
+#include <sstream>
 
 // Type alias for 2D matrix
 using Matrix = std::vector<std::vector<int>>;
@@ -95,6 +94,15 @@ void splitMatrix(const Matrix& inputMatrix, Matrix& quadrant1, Matrix& quadrant2
 //         std::cout << std::endl;
 //     }
 // }
+
+struct VehicleData {
+    int vehicleID;
+    double xCoordinate;
+    double yCoordinate;
+    std::string tileName; // New column for tile name
+};
+
+
 
 class QuadTree 
 {
@@ -228,9 +236,65 @@ public:
 };
 
 
-void give_tile(QuadTree* qt,double x,double y)
+std::string give_tile(QuadTree* qt,double x,double y)
 {
-    std::cout<<"The corres. tile name is "<<qt->get_tile_by_loc(qt,x,y)<<std::endl;
+    //std::cout<<"The corres. tile name is "<<qt->get_tile_by_loc(qt,x,y)<<std::endl;
+    return qt->get_tile_by_loc(qt,x,y);
+}
+
+std::vector<VehicleData> readCSV(QuadTree* qt,const std::string& filename) {
+    std::vector<VehicleData> data;
+
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        std::cout << "Failed to open the file: " << filename << std::endl;
+        return data;
+    }
+
+    std::string line;
+    std::getline(file, line); // Skip the header line
+
+    while (std::getline(file, line)) {
+        std::istringstream iss(line);
+        std::string token;
+
+        VehicleData vehicle;
+        std::getline(iss, token, ',');
+        vehicle.vehicleID = std::stoi(token);
+
+        std::getline(iss, token, ',');
+        vehicle.xCoordinate = std::stod(token);
+
+        std::getline(iss, token, ',');
+        vehicle.yCoordinate = std::stod(token);
+
+        // Call the function to get the tile name
+        vehicle.tileName = give_tile(qt,vehicle.xCoordinate, vehicle.yCoordinate);
+
+        data.push_back(vehicle);
+    }
+
+    file.close();
+    return data;
+}
+
+void writeCSV(const std::string& filename, const std::vector<VehicleData>& data) {
+    std::ofstream file(filename);
+    if (!file.is_open()) {
+        std::cout << "Failed to open the file: " << filename << std::endl;
+        return;
+    }
+
+    // Write the header line
+    file << "Vehicle ID,X Coordinate,Y Coordinate,Tile Name" << std::endl;
+
+    // Write the data rows
+    for (const VehicleData& vehicle : data) {
+        file << vehicle.vehicleID << "," << vehicle.xCoordinate << "," << vehicle.yCoordinate << ","
+             << vehicle.tileName << std::endl;
+    }
+
+    file.close();
 }
 
 
@@ -286,26 +350,40 @@ int main()
     }
 
 
-    while(true)
-    {
-        int ch;
-        std::cout<<"Enter 1 to give location or 0 to exit"<<std::endl;
-        std::cin>>ch;
+    // while(true)
+    // {
+    //     int ch;
+    //     std::cout<<"Enter 1 to give location or 0 to exit"<<std::endl;
+    //     std::cin>>ch;
 
-        if(ch==0)
-            break;
-        else
-        {
-            double x,y;
-            std::cout<<"Enter X:"<<std::endl;
-            std::cin>>x;
-            std::cout<<"Enter Y:"<<std::endl;
-            std::cin>>y;
+    //     if(ch==0)
+    //         break;
+    //     else
+    //     {
+    //         double x,y;
+    //         std::cout<<"Enter X:"<<std::endl;
+    //         std::cin>>x;
+    //         std::cout<<"Enter Y:"<<std::endl;
+    //         std::cin>>y;
 
-            give_tile(qt,x,y);
-        }
+    //         give_tile(qt,x,y);
+    //     }
              
+    // }
+
+    std::string filename = "../vehicle_coordinates.csv"; // Replace with your CSV file path
+
+    std::vector<VehicleData> vehicleData = readCSV(qt,filename);
+
+    // Print the read data
+    for (const VehicleData& vehicle : vehicleData) {
+        std::cout << "Vehicle ID: " << vehicle.vehicleID << ", X Coordinate: " << vehicle.xCoordinate
+                  << ", Y Coordinate: " << vehicle.yCoordinate << ", Tile Name: " << vehicle.tileName
+                  << std::endl;
     }
+
+    // Save the modified data back to the CSV file
+    writeCSV("../modified_file.csv", vehicleData);
 
     return 0;
 }
