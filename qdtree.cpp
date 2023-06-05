@@ -304,7 +304,7 @@ int main()
     // std::string output_dir = "/home/sayon/autoware_map/town01/splitted/";
     // std::string prefix = "t1";
     
-    std::vector<std::vector<int>> matrix = readMatrixFromFile("../matrix.txt");
+    std::vector<std::vector<int>> matrix = readMatrixFromFile("../modified_matrix.txt");
     // Display the matrix
     // for (const auto& row : matrix) 
     // {
