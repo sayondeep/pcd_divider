@@ -96,6 +96,7 @@ void splitMatrix(const Matrix& inputMatrix, Matrix& quadrant1, Matrix& quadrant2
 // }
 
 struct VehicleData {
+    int time;
     int vehicleID;
     double xCoordinate;
     double yCoordinate;
@@ -259,6 +260,10 @@ std::vector<VehicleData> readCSV(QuadTree* qt,const std::string& filename) {
         std::string token;
 
         VehicleData vehicle;
+
+        std::getline(iss, token, ',');
+        vehicle.time = std::stoi(token);
+
         std::getline(iss, token, ',');
         vehicle.vehicleID = std::stoi(token);
 
@@ -286,11 +291,11 @@ void writeCSV(const std::string& filename, const std::vector<VehicleData>& data)
     }
 
     // Write the header line
-    file << "Vehicle ID,X Coordinate,Y Coordinate,Tile Name" << std::endl;
+    file << "Time,Vehicle ID,X Coordinate,Y Coordinate,Tile Name" << std::endl;
 
     // Write the data rows
     for (const VehicleData& vehicle : data) {
-        file << vehicle.vehicleID << "," << vehicle.xCoordinate << "," << vehicle.yCoordinate << ","
+        file <<vehicle.time<<","<< vehicle.vehicleID << "," << vehicle.xCoordinate << "," << vehicle.yCoordinate << ","
              << vehicle.tileName << std::endl;
     }
 
@@ -376,8 +381,9 @@ int main()
     std::vector<VehicleData> vehicleData = readCSV(qt,filename);
 
     // Print the read data
-    for (const VehicleData& vehicle : vehicleData) {
-        std::cout << "Vehicle ID: " << vehicle.vehicleID << ", X Coordinate: " << vehicle.xCoordinate
+    for (const VehicleData& vehicle : vehicleData) 
+    {
+        std::cout <<"Time: "<<vehicle.time<< ", Vehicle ID: " << vehicle.vehicleID << ", X Coordinate: " << vehicle.xCoordinate
                   << ", Y Coordinate: " << vehicle.yCoordinate << ", Tile Name: " << vehicle.tileName
                   << std::endl;
     }

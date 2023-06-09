@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/sayon/pcd_grid_size/pcd_divider
+CMAKE_SOURCE_DIR = /home/sayon/Thesis/pcd_divider
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/sayon/pcd_grid_size/pcd_divider/build
+CMAKE_BINARY_DIR = /home/sayon/Thesis/pcd_divider/build
 
 # Utility rule file for uninstall.
 
@@ -78,6 +78,6 @@ CMakeFiles/uninstall.dir/clean:
 .PHONY : CMakeFiles/uninstall.dir/clean
 
 CMakeFiles/uninstall.dir/depend:
-	cd /home/sayon/pcd_grid_size/pcd_divider/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/sayon/pcd_grid_size/pcd_divider /home/sayon/pcd_grid_size/pcd_divider /home/sayon/pcd_grid_size/pcd_divider/build /home/sayon/pcd_grid_size/pcd_divider/build /home/sayon/pcd_grid_size/pcd_divider/build/CMakeFiles/uninstall.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/sayon/Thesis/pcd_divider/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/sayon/Thesis/pcd_divider /home/sayon/Thesis/pcd_divider /home/sayon/Thesis/pcd_divider/build /home/sayon/Thesis/pcd_divider/build /home/sayon/Thesis/pcd_divider/build/CMakeFiles/uninstall.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/uninstall.dir/depend
 
